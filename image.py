@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Response
+from PIL import Image
 import io
 from typing import List, Optional
 import pandas as pd
 from pydantic import BaseModel
-
+from fastapi.responses import JSONResponse
+import base64
 app = FastAPI()
 class RepeatedMeasuresAnovaInput(BaseModel):
     value_column: List[int]
@@ -29,9 +31,11 @@ async def get_line_plot(input_data: RepeatedMeasuresAnovaInput):
     img_buffer = io.BytesIO()
     plot.figure.savefig(img_buffer, format='png')
 
-    # Return the image as a response
-    img_buffer.seek(0)
-    return Response(content=img_buffer.getvalue(), media_type='image/png')
+   # Base64 encode the image
+    img_encoded = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+
+    # Return the image as a JSON response
+    return JSONResponse(content={'image': img_encoded}, media_type='application/json')
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, port=8000)
