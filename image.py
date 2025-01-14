@@ -1,11 +1,12 @@
-from fastapi import FastAPI, Response
+from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from PIL import Image
-import io
+import os
 from typing import List, Optional
 import pandas as pd
 from pydantic import BaseModel
-from fastapi.responses import JSONResponse
-import base64
+
+import matplotlib.pyplot as plt
 app = FastAPI()
 class RepeatedMeasuresAnovaInput(BaseModel):
     value_column: List[int]
@@ -27,15 +28,15 @@ async def get_line_plot(input_data: RepeatedMeasuresAnovaInput):
     # Generate the plot
     plot = df.plot(x='time', y='value', kind='line', title='Line Plot', figsize=(10, 6))
 
-    # Convert the plot to a PNG image
-    img_buffer = io.BytesIO()
-    plot.figure.savefig(img_buffer, format='png')
+   # Save the plot to a temporary file
+    img_path = 'temp.png'
+    plt.savefig(img_path)
 
-   # Base64 encode the image
-    img_encoded = base64.b64encode(img_buffer.getvalue()).decode('utf-8')
+    # Return the image file
+    return FileResponse(img_path, media_type='image/png')
 
-    # Return the image as a JSON response
-    return JSONResponse(content={'image': img_encoded}, media_type='application/json')
+    # Don't forget to delete the temporary file
+    os.remove(img_path)
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, port=8000)
