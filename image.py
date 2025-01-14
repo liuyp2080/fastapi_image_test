@@ -4,7 +4,6 @@ import io
 from typing import List, Optional
 import pandas as pd
 from pydantic import BaseModel
-import pingouin as pg
 
 app = FastAPI()
 class RepeatedMeasuresAnovaInput(BaseModel):
