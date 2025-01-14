@@ -1,6 +1,5 @@
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
-from PIL import Image
 import os
 from typing import List, Optional
 import pandas as pd
