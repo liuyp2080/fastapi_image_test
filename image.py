@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Response
-from PIL import Image
 import io
 from typing import List, Optional
 import pandas as pd
