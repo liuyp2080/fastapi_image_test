@@ -5,4 +5,3 @@ pingouin
 typing
 matplotlib
 uvicorn
-tempfile
