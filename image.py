@@ -7,6 +7,11 @@ from pydantic import BaseModel
 import matplotlib.pyplot as plt
 import tempfile
 app = FastAPI()
+
+# Create a directory to store the plot images
+plot_dir = "plot"
+if not os.path.exists(plot_dir):
+    os.makedirs(plot_dir)
 class RepeatedMeasuresAnovaInput(BaseModel):
     value_column: List[int]
     group_column: Optional[List[object]]=None
@@ -32,8 +37,8 @@ async def get_line_plot(input_data: RepeatedMeasuresAnovaInput):
         plot_path = tmp.name
         plt.savefig(plot_path)
     # Return the image file
-    
-    return {"url": f"/plot/{os.path.basename(plot_path)}"}
+    baseUrl="https://fastapi-image-test.onrender.com"
+    return {"url": baseUrl+f"/plot/{os.path.basename(plot_path)}"}
 
 if __name__ == "__main__":
     import uvicorn
