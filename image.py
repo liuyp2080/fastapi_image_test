@@ -1,11 +1,11 @@
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi import FastAPI,Response
+# from fastapi.responses import FileResponse
 import os
 from typing import List, Optional
 import pandas as pd
 from pydantic import BaseModel
-
 import matplotlib.pyplot as plt
+import tempfile
 app = FastAPI()
 class RepeatedMeasuresAnovaInput(BaseModel):
     value_column: List[int]
@@ -25,17 +25,16 @@ async def get_line_plot(input_data: RepeatedMeasuresAnovaInput):
     })
 
     # Generate the plot
-    plot = df.plot(x='time', y='value', kind='line', title='Line Plot', figsize=(10, 6))
-
-   # Save the plot to a temporary file
-    img_path = 'temp.png'
-    plt.savefig(img_path)
-
+    fig, ax = plt.subplots()
+    ax.plot([1, 2, 3], [4, 5, 6])
+    # Create a temporary file to store the plot image
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmp:
+        plot_path = tmp.name
+        plt.savefig(plot_path)
     # Return the image file
-    return FileResponse(img_path, media_type='image/png')
+    
+    return {"url": f"/plot/{os.path.basename(plot_path)}"}
 
-    # Don't forget to delete the temporary file
-    os.remove(img_path)
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, port=8000)
